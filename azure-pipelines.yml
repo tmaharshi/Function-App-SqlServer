@@ -23,9 +23,9 @@ stages:
           provider: 'azurerm'
           command: 'init'
           backendServiceArm: 'FunctionApp/SQL-Service_Connection'
-          backendAzureRmResourceGroupName: 'Strorage-RG'
-          backendAzureRmStorageAccountName: 'storageaccount308081'
-          backendAzureRmContainerName: 'marketing'
+          backendAzureRmResourceGroupName: 'usecasetf-rg'
+          backendAzureRmStorageAccountName: 'lbsusecasesa'
+          backendAzureRmContainerName: 'tfstate'
           backendAzureRmKey: 'function.tfstate'
           workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
       - task: TerraformTaskV4@4
