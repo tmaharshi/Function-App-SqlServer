@@ -12,7 +12,7 @@ pool:
 stages:
 - stage: tfvalidate
   jobs:
-  - job: initandvalidate
+  - job: validate
     continueOnError: false
     steps:
       - task: TerraformInstaller@1
