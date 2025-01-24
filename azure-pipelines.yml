@@ -15,9 +15,6 @@ stages:
   - job: validate
     continueOnError: false
     steps:
-      - task: TerraformInstaller@1
-        inputs:
-          terraformVersion: 'latest'
       - task: TerraformTaskV4@4
         inputs:
           provider: 'azurerm'
