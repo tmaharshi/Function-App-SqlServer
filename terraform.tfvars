@@ -1,0 +1,7 @@
+resource_group_name       = "usecase-rg"
+location                  = "Canada Central"
+function_app_name         = "usecasefa"
+sql_server_name           = "usecaseSQLServer"
+sql_database_name         = "usecaseDatabase"
+sql_admin_username        = "sqladmin"
+sql_admin_password        = "P@ssw0rd1234!"
