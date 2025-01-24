@@ -66,6 +66,7 @@ stages:
             provider: 'azurerm'
             command: 'plan'
             environmentServiceNameAzureRM: 'FunctionApp/SQL-Service_Connection'
+            commandOptions: '-var-file=terraform.tfvars -out=tfplan'
         - task: TerraformTaskV4@4
           displayName: apply
           inputs:
