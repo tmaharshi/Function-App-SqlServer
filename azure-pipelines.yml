@@ -35,7 +35,7 @@ stages:
           backendServiceArm: 'FunctionApp/SQL-Service_Connection'
           workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
 - stage: tfplan
-  dependsOn: [tfvalidate]
+  dependsOn: tfvalidate
   condition: succeeded('tfvalidate')
   jobs:
   - job: PlanTerraform
@@ -48,7 +48,7 @@ stages:
           workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
           commandOptions: '-var-file=terraform.tfvars -out=tfplan'
 - stage: tfapply
-  dependsOn: [tfplan]
+  dependsOn: tfplan
   condition: succeeded('plan')
   jobs:
   - job: PlanTerraform
