@@ -6,7 +6,7 @@ terraform {
     key                   = "function.tfstate"
 
     client_id             = "c904da2d-446e-4329-b10b-671e0eda1719"
-    client_secret         = "acf4c584-8547-4c8b-88f8-876b977b31b9"
+    client_secret         = "CRj8Q~PjU.5f6gtVHbeiEf-6WcF1QJgyYfzRebHz"
     tenant_id             = "3c33924a-8f7e-460b-96e0-58bc5724686f"
     subscription_id       = "a62b8882-3f1a-45ff-852f-3d4d1fe3ee13"
   }
