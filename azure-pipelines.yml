@@ -9,51 +9,66 @@ trigger:
 pool:
   vmImage: ubuntu-latest
 
+variables:
+  bkstrgrg: 'usecasetf-rg'
+  bkstrg: 'lbsusecasesa'
+  bkcontainer: 'tfstate'
+  bkstrgkey: 'function.tfstate'
+
 stages:
-- stage: tfvalidate
-  jobs:
-  - job: validate
-    continueOnError: false
-    steps:
-      - task: TerraformTaskV4@4
-        inputs:
-          provider: 'azurerm'
-          command: 'init'
-          backendServiceArm: 'FunctionApp/SQL-Service_Connection'
-          backendAzureRmResourceGroupName: 'usecasetf-rg'
-          backendAzureRmStorageAccountName: 'lbsusecasesa'
-          backendAzureRmContainerName: 'tfstate'
-          backendAzureRmKey: 'function.tfstate'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
-      - task: TerraformTaskV4@4
-        inputs:
-          provider: 'azurerm'
-          command: 'validate'
-          backendServiceArm: 'FunctionApp/SQL-Service_Connection'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
-- stage: tfplan
-  dependsOn: tfvalidate
-  condition: succeeded('tfvalidate')
-  jobs:
-  - job: PlanTerraform
-    steps:
-      - task: TerraformTaskV4@4
-        inputs:
-          provider: 'azurerm'
-          command: 'plan'
-          environmentServiceNameAzureRM: 'FunctionApp/SQL-Service_Connection'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
-          commandOptions: '-var-file=terraform.tfvars -out=tfplan'
-- stage: tfapply
-  dependsOn: tfplan
-  condition: succeeded('plan')
-  jobs:
-  - job: PlanTerraform
-    steps:
-      - task: TerraformTaskV4@4
-        inputs:
-          provider: 'azurerm'
-          command: 'apply'
-          environmentServiceNameAzureRM: 'FunctionApp/SQL-Service_Connection'
-          workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
-          commandOptions: '-input=false tfplan'
+  - stage: tfvalidate
+    jobs:
+    - job: validate
+      continueOnError: false
+      steps:
+        - task: TerraformInstaller@1
+          displayName: tfinstall
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTaskV4@4
+          displayName: init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'FunctionApp/SQL-Service_Connection'
+            backendAzureRmResourceGroupName: '$(bkstrgrg)'
+            backendAzureRmStorageAccountName: '$(bkstrg)'
+            backendAzureRmContainerName: '$(bkcontainer)'
+            backendAzureRmKey: '$(bkstrgkey)'
+        - task: TerraformTaskV4@4
+          displayName: validate
+          inputs:
+            provider: 'azurerm'
+            command: 'validate'
+  - stage: tfdeploy
+    condition: succeeded ('tfvalidate')
+    dependsOn: tfvalidate
+    jobs: 
+    - job: apply
+      steps:
+        - task: TerraformInstaller@1
+          displayName: tfinstall
+          inputs:
+            terraformVersion: 'latest'
+        - task: TerraformTaskV4@4
+          displayName: init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            backendServiceArm: 'FunctionApp/SQL-Service_Connection'
+            backendAzureRmResourceGroupName: '$(bkstrgrg)'
+            backendAzureRmStorageAccountName: '$(bkstrg)'
+            backendAzureRmContainerName: '$(bkcontainer)'
+            backendAzureRmKey: '$(bkstrgkey)'
+        - task: TerraformTaskV4@4
+          displayName: plan
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            environmentServiceNameAzureRM: 'FunctionApp/SQL-Service_Connection'
+        - task: TerraformTaskV4@4
+          displayName: apply
+          inputs:
+            provider: 'azurerm'
+            command: 'apply'
+            environmentServiceNameAzureRM: 'FunctionApp/SQL-Service_Connection'
