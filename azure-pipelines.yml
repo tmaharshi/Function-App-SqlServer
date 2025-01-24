@@ -1,0 +1,62 @@
+# Starter pipeline
+# Start with a minimal pipeline that you can customize to build and deploy your code.
+# Add steps that build, run tests, deploy, and more:
+# https://aka.ms/yaml
+
+trigger:
+- none
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: tfvalidate
+  jobs:
+  - job: initandvalidate
+    continueOnError: false
+    steps:
+      - task: TerraformInstaller@1
+        inputs:
+          terraformVersion: 'latest'
+      - task: TerraformTaskV4@4
+        inputs:
+          provider: 'azurerm'
+          command: 'init'
+          backendServiceArm: 'FunctionApp/SQL-Service_Connection'
+          backendAzureRmResourceGroupName: 'Strorage-RG'
+          backendAzureRmStorageAccountName: 'storageaccount308081'
+          backendAzureRmContainerName: 'marketing'
+          backendAzureRmKey: 'function.tfstate'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
+      - task: TerraformTaskV4@4
+        inputs:
+          provider: 'azurerm'
+          command: 'validate'
+          backendServiceArm: 'FunctionApp/SQL-Service_Connection'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
+- stage: tfplan
+  dependsOn: [tfvalidate]
+  condition: succeeded('tfvalidate')
+  jobs:
+  - job: PlanTerraform
+    steps:
+      - task: TerraformTaskV4@4
+        inputs:
+          provider: 'azurerm'
+          command: 'plan'
+          environmentServiceNameAzureRM: 'FunctionApp/SQL-Service_Connection'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
+          commandOptions: '-var-file=terraform.tfvars -out=tfplan'
+- stage: tfapply
+  dependsOn: [tfplan]
+  condition: succeeded('plan')
+  jobs:
+  - job: PlanTerraform
+    steps:
+      - task: TerraformTaskV4@4
+        inputs:
+          provider: 'azurerm'
+          command: 'apply'
+          environmentServiceNameAzureRM: 'FunctionApp/SQL-Service_Connection'
+          workingDirectory: '$(System.DefaultWorkingDirectory)/Azure Function Sql'
+          commandOptions: '-input=false tfplan'
