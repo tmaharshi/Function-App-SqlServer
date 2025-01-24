@@ -1,12 +1,12 @@
 terraform {
   backend "azurerm" {
-    resource_group_name   = "Strorage-RG"
-    storage_account_name  = "storageaccount308081"
-    container_name        = "marketing"
+    resource_group_name   = "usecasetf-rg"
+    storage_account_name  = "lbsusecasesa"
+    container_name        = "tfstate"
     key                   = "function.tfstate"
 
-    client_id             = "b049e7c4-b809-486b-9433-8a6745db6a95"
-    client_secret         = "4eR8Q~IEcr33IpppLTQ_ay2UiPqe_sxg35rUJapg"
+    client_id             = "c904da2d-446e-4329-b10b-671e0eda1719"
+    client_secret         = "acf4c584-8547-4c8b-88f8-876b977b31b9"
     tenant_id             = "3c33924a-8f7e-460b-96e0-58bc5724686f"
     subscription_id       = "a62b8882-3f1a-45ff-852f-3d4d1fe3ee13"
   }
